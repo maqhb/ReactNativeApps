@@ -1,0 +1,152 @@
+import React, { Component, useState } from 'react';
+import { View, Text, FlatList, ActivityIndicator,StyleSheet } from 'react-native';
+import axios from 'axios';
+
+function Item({ title }) {
+
+    // makeRemoteRequest = () => {
+        const url = `https://disease.sh/v2/countries/`+title;
+        //this.setState({ loading: true });
+        const [getCases,setCases] = useState(null);
+        const [getactiveCases,setactiveCases] = useState(null);
+        const [gettotalDeaths,settotalDeaths] = useState(null);
+        
+        axios.get(url)
+          .then(res => {
+            //   console.log(res.data)
+            // this.setState({
+            //     data: res.data,
+            //     error: res.error || null,
+            //     loading: false,
+            //   });
+            
+    
+            // this.arrayholder = res.data;
+
+            setCases(res.data.cases);
+            setactiveCases(res.data.active);
+            settotalDeaths(res.data.deaths);
+
+            
+          })
+          .catch(error => {
+            // this.setState({ error, loading: false });
+          });
+    //   };
+    //   makeRemoteRequest();
+    console.log(getCases)
+    return (
+      <View style={styles.item}>
+        <Text style={styles.title}>{title}</Text>
+        <Text>Total Cases: {getCases} </Text>
+    <Text>Active Cases: {getactiveCases}</Text>
+    <Text>Total Deaths: {gettotalDeaths}</Text>
+      </View>
+    );
+  }
+
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      marginTop: 5,
+    },
+    item: {
+      backgroundColor: '#5c6bc0',
+      padding: 20,
+      marginVertical: 8,
+      marginHorizontal: 16,
+    },
+    title: {
+      fontSize: 24,
+      color: 'white',
+    },
+  });
+
+class Stats extends Component {
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+          loading: false,
+          continent: this.props.route.params.continent,
+          newConfirmed: null,
+          newDeaths: null,
+          activeCases: null,
+          totalConfirmed: null,
+          totalDeaths: null,
+          totalRecovered: null,
+          countries: null,
+        };
+        this.cont = this.state.continent;
+        
+      }
+
+      componentDidMount() {
+        this.makeRemoteRequest();
+      }
+    
+      makeRemoteRequest = () => {
+        const url = `https://disease.sh/v2/continents/`+this.state.continent+`?yesterday=false`;
+        this.setState({ loading: true });
+    
+        
+        axios.get(url)
+          .then(res => {
+            this.setState({
+                newConfirmed: res.data.todayCases,
+                newDeaths: res.data.todayDeaths,
+                activeCases: res.data.active,
+                totalConfirmed: res.data.cases,
+                totalDeaths: res.data.deaths,
+                totalRecovered: res.data.recovered,
+                error: res.error || null,
+                loading: false,
+                countries: res.data.countries,
+              });
+          }).catch(error => {
+            this.setState({ error, loading: false });
+          });
+      };
+
+
+      
+
+  
+      render() {
+        if (this.state.loading) {
+          return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <ActivityIndicator />
+            </View>
+          );
+        }
+        if(this.state.continent=="Australia%2FOceania"){
+            this.cont = "Australia/Oceania";
+    }
+        
+        return (
+            <>
+            
+        <Text>{this.cont} Summary </Text>
+        <Text>NewConfirmed: {this.state.newConfirmed} </Text>
+        <Text>NewDeaths: {this.state.newDeaths}</Text>
+        <Text>Active Cases: {this.state.activeCases}</Text>
+        <Text>TotalConfirmed: {this.state.totalConfirmed}</Text>
+        <Text>TotalDeaths: {this.state.totalDeaths}</Text>
+        <Text>TotalRecovered: {this.state.totalRecovered}</Text>
+        <FlatList
+        data={this.state.countries}
+        keyExtractor={(item,index) => {         
+            return index.toString()}}
+        renderItem={({ item }) => <Item title={item} />}        
+        />
+        
+        </>
+
+        )
+
+}
+}
+
+export default Stats;

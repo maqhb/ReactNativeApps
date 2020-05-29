@@ -1,0 +1,75 @@
+import React, { Component } from 'react';
+import { View, Text, FlatList, ActivityIndicator } from 'react-native';
+import axios from 'axios';
+
+class Worldwide extends Component {
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+          loading: false,
+          newConfirmed: null,
+          newDeaths: null,
+          newRecovered: null,
+          totalConfirmed: null,
+          totalDeaths: null,
+          totalRecovered: null,
+        };
+    
+        
+      }
+
+      componentDidMount() {
+        this.makeRemoteRequest();
+      }
+    
+      makeRemoteRequest = () => {
+        const url = `https://api.covid19api.com/summary`;
+        this.setState({ loading: true });
+    
+        
+        axios.get(url)
+          .then(res => {
+            this.setState({
+                newConfirmed: res.data.Global.NewConfirmed,
+                newDeaths: res.data.Global.NewDeaths,
+                newRecovered: res.data.Global.NewRecovered,
+                totalConfirmed: res.data.Global.TotalConfirmed,
+                totalDeaths: res.data.Global.TotalDeaths,
+                totalRecovered: res.data.Global.TotalRecovered,
+                error: res.error || null,
+                loading: false,
+              });
+              console.log()
+          })
+          .catch(error => {
+            this.setState({ error, loading: false });
+          });
+      };
+
+  
+      render() {
+        if (this.state.loading) {
+          return (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <ActivityIndicator />
+            </View>
+          );
+        }
+        return (
+            <>
+        <Text>Global Summary </Text>
+        <Text>NewConfirmed: {this.state.newConfirmed} </Text>
+        <Text>NewDeaths: {this.state.newDeaths}</Text>
+        <Text>NewRecovered: {this.state.newRecovered}</Text>
+        <Text>TotalConfirmed: {this.state.totalConfirmed}</Text>
+        <Text>TotalDeaths: {this.state.totalDeaths}</Text>
+        <Text>TotalRecovered: {this.state.totalRecovered}</Text>
+        </>
+
+        )
+
+}
+}
+
+export default Worldwide;
