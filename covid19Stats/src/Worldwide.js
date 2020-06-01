@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { View, Image, ActivityIndicator } from 'react-native';
+import { View, Image,TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-elements';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import RowText from './RowComponent'
+
 
 class Worldwide extends Component {
     constructor(props) {
@@ -41,7 +43,7 @@ class Worldwide extends Component {
                 error: res.error || null,
                 loading: false,
               });
-              console.log()
+            
           })
           .catch(error => {
             this.setState({ error, loading: false });
@@ -52,71 +54,42 @@ class Worldwide extends Component {
       render() {
         if (this.state.loading) {
           return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator />
+            <>
+            
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',backgroundColor: 'white' }}>
+                 <Image style={{alignSelf: 'center',height: 160,width: 160}} source={require('../assets/loading.gif')}></Image>
             </View>
+            </>
           );
         }
         return (
             <>
-        <View style={{ marginTop: 5,width: 100}}>
-        <Icon name="arrow-left" size={25} color="black" style={{marginLeft: 10}} onPress={() => this.props.navigation.goBack()} />
+        <View style={{ marginTop: 5,width: "100%",flexDirection: 'row',justifyContent: 'space-between'}}>
+        <Icon name="arrow-left" size={30} color="#40c4ff" style={{marginLeft: 10}} onPress={() => this.props.navigation.goBack()} />
+        <TouchableOpacity onPress={()=> this.props.navigation.openDrawer()}>
+              <Image source={require('../assets/menu.png')}  style={{marginRight: 15,height: 30,width: 30}}></Image>
+              </TouchableOpacity>
       </View>
+      
         <View style={{ alignItems: 'center',marginTop: 20}}>
         <Image source={{uri: "https://www.globe.gov/globe-gov-home-portlet/images/learn-earth-system/learn-earth-system-clean.png"}} 
         style={{width: 100, height: 100,marginLeft: 10,marginTop: 10}}
         ></Image>
         </View>
         <View style={{ alignItems: 'center'}}>
-        
         <Text h4>Global Summary </Text>
         </View>
         
         
         <View style={{marginTop: 20,marginLeft: 20}}>
-        <Text style={{marginTop: 5,marginBottom: 5}}>
-            <Text style={{fontWeight: "bold"}}>
-            Cases Today                     </Text>
-             {this.state.newConfirmed} 
-        </Text>
-        <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginBottom: 2}}/> 
-
-
-        <Text style={{marginTop: 5,marginBottom: 5}}> 
-            <Text style={{fontWeight: "bold"}}>
-            Deaths Today                   </Text>
-            {this.state.newDeaths}</Text>
-            <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginBottom: 2}}/> 
-
-        <Text style={{marginTop: 5,marginBottom: 5}}> 
-        <Text style={{fontWeight: "bold"}}>
-            Active Cases                    </Text>
-            {this.state.activeCases}</Text>
-            <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE',  marginBottom: 2}}/> 
-
-
-        <Text style={{marginTop: 5,marginBottom: 5}}> 
-            <Text style={{fontWeight: "bold"}}>
-            Cases                                </Text>
-            {this.state.totalConfirmed}</Text>
-            <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginBottom: 2}}/> 
-
-        <Text style={{marginTop: 5,marginBottom: 5}}> 
-            <Text style={{fontWeight: "bold"}}>
-            Deaths                              </Text>
-            {this.state.totalDeaths}</Text>
-            <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginBottom: 2}}/> 
-
-
-        <Text style={{marginTop: 5,marginBottom: 5}}> 
-            <Text style={{fontWeight: "bold"}}>
-            Recovered                       </Text>
-            {this.state.totalRecovered}</Text>
-            <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginBottom: 2}}/> 
-
+          <RowText text="Cases Today" value={this.state.newConfirmed} styles={{marginLeft: 100}}></RowText>
+          <RowText text="Deaths Today" value={this.state.newDeaths} styles={{marginLeft: 94}}></RowText>
+          <RowText text="Active Today" value={this.state.activeCases} styles={{marginLeft: 97}}></RowText>
+          <RowText text="Cases" value={this.state.totalConfirmed} styles={{marginLeft: 142}}></RowText>
+          <RowText text="Deaths" value={this.state.totalDeaths} styles={{marginLeft: 135}}></RowText>
+          <RowText text="Recovered" value={this.state.totalRecovered} styles={{marginLeft: 108}}></RowText>
         </View>
         </>
-
         )
 
 }

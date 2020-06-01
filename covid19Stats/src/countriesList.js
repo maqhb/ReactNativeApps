@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator } from 'react-native';
+import { View, FlatList,Image,TouchableOpacity } from 'react-native';
 import { ListItem, SearchBar } from 'react-native-elements';
 import axios from 'axios';
-
 class countriesList extends Component {
 
     constructor(props) {
@@ -63,7 +62,7 @@ class countriesList extends Component {
         const newData = this.response.filter(item => {
             const itemData = `${item.country.toUpperCase()}`;
             const textData = text.toUpperCase();
-            return itemData.indexOf(textData)>-1;
+            return itemData.includes(textData);
           });
           this.setState({
             data: newData,
@@ -75,10 +74,12 @@ class countriesList extends Component {
         return (
           <SearchBar
             placeholder="Search"
-            darkTheme
+            inputContainerStyle={{backgroundColor: 'white'}}
+            inputStyle={{backgroundColor: 'white'}}
             onChangeText={text => this.search(text)}
             autoCorrect={false}
             value={this.state.value}
+            round
           />
         );
       };
@@ -87,8 +88,8 @@ class countriesList extends Component {
           
         if (this.state.loading) {
             return (
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-                <ActivityIndicator />
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',backgroundColor: 'white' }}>
+                 <Image style={{alignSelf: 'center',height: 160,width: 160}} source={require('../assets/loading.gif')}></Image>
               </View>
             );
           }
@@ -103,7 +104,7 @@ class countriesList extends Component {
                 renderItem={({ item,index }) => (
                   <ListItem
                   key={item.id}
-                    leftAvatar={{size:"medium", source:  { uri: `${item.countryInfo.flag}` } }}              
+                    leftAvatar={{size:"small",rounded:false, source:  { uri: `${item.countryInfo.flag}` } }}              
                     title={`${item.country}`}
                     chevron
                     onPress={()=> {this.nextS(item.country,item.countryInfo.flag)}}
@@ -111,6 +112,7 @@ class countriesList extends Component {
                 )}
                 ItemSeparatorComponent={this.line}
                 ListHeaderComponent={this.searchBar}
+                stickyHeaderIndices={[0]}
               />
             </View>
         )

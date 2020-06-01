@@ -1,11 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import axios from 'axios';
 
-import { View,  ActivityIndicator,Image } from 'react-native';
+import { View,Image,TouchableOpacity } from 'react-native';
 import { Text } from 'react-native-elements';
-import Tab from './Tabs'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import RowText from './RowComponent'
 
-
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 class Screen2 extends React.Component{
 
@@ -28,27 +31,18 @@ class Screen2 extends React.Component{
         
 }
   
-componentDidMount() {
+
+
+async componentDidMount() {
     this.makeRemoteRequest();
-    
+    await sleep(1000);
+    this.setState({loading: false})
   }
 
   makeRemoteRequest = () => {
     const url = "https://api.covid19api.com/dayone/country/"+this.state.country+"/status/confirmed";
     this.setState({ loading: true });
     
-    axios.get(url)
-      .then(res => {
-          var st = res.data[0].Date;
-        this.setState({
-            firstDate: st.substring(0, 10),
-            firstDayCases: res.data[0].Cases,
-          });
-      })
-      .catch(error => {
-        this.setState({ error });
-      });
-
     axios.get("https://disease.sh/v2/countries/"+this.state.country)
       .then(res => {
           this.setState({
@@ -56,15 +50,31 @@ componentDidMount() {
               activeCases: res.data.active,
               deaths: res.data.deaths,
               recovered: res.data.recovered,
-              loading: false,
+              
           })
       })
       .catch(error => {
         this.setState({ error });
       });
 
+    axios.get(url)
+      .then(res => {
+          var st = res.data[0].Date;
+        this.setState({
+            firstDate: st.substring(0, 10),
+            firstDayCases: res.data[0].Cases,
+            
+          });
+      })
+      .catch(error => {
+        this.setState({ error });
+      });
+
+    
+      
       if(this.state.firstDayCases == null){
-        this.setState({firstDayCases: "No Data Found", firstDate: "No Data Found"});
+        this.setState({firstDayCases: 
+          "No Data Found", firstDate: "No Data Found"});
       }
 
   };
@@ -75,55 +85,38 @@ componentDidMount() {
     
     if (this.state.loading) {
         return (
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-            <ActivityIndicator />
-          </View>
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',backgroundColor: 'white' }}>
+                 <Image style={{alignSelf: 'center',height: 160,width: 160}} source={require('../assets/loading.gif')}></Image>
+              </View>
         );
       }
        return(
         <>
+        <View style={{ marginTop: 5,width: "100%",flexDirection: 'row',justifyContent: 'space-between'}}>
+        <Icon name="arrow-left" size={30} color="#40c4ff" style={{marginLeft: 10}} onPress={() => this.props.navigation.goBack()} />
+        <TouchableOpacity onPress={()=> this.props.navigation.openDrawer()}>
+              <Image source={require('../assets/menu.png')}  style={{marginRight: 15,height: 30,width: 30}}></Image>
+              </TouchableOpacity>
+      </View>
+        <View style={{alignItems: 'center'}}>
         <Image source={{ uri: this.state.flag }} 
-        style={{width: 100, height: 100,borderRadius: 100,borderWidth: 3,borderColor: 'black',marginLeft: 130,marginTop: 20,marginBottom: 20}}>
+        style={{width: 150, height: 100,borderWidth: 3,borderColor: 'black',marginTop: 20,marginBottom: 20}}>
         </Image>
+        </View>
         <View style={{ alignItems: 'center', justifyContent: 'center'}}>
        <Text h4>{this.state.country}</Text>
        
        </View>
        <View style={{marginTop: 20}}>
        
-       <Text style={{marginLeft: 20,marginTop: 5,marginBottom: 5}}>
-       <Text style={{fontWeight: "bold"}}> First Case On                 </Text>
-             {this.state.firstDate}
-            </Text>
-            {this.line}
-       <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginLeft: '5%', marginBottom: 2}}/> 
 
+       <RowText text="First Case On" value={this.state.firstDate} styles={{marginLeft: 100}}></RowText>
+       <RowText text="Cases on First Day" value={this.state.firstDayCases} styles={{marginLeft: 62}}></RowText>
+       <RowText text="Total Cases" value={this.state.totalCases} styles={{marginLeft: 110}}></RowText>
+       <RowText text="Active Cases" value={this.state.activeCases} styles={{marginLeft: 100}}></RowText>
+       <RowText text="Total Deaths" value={this.state.deaths} styles={{marginLeft: 105}}></RowText>
+       <RowText text="Recovered" value={this.state.recovered} styles={{marginLeft: 116}}></RowText>
 
-       <Text style={{marginLeft: 20,marginTop: 5,marginBottom: 5}}>
-       <Text style={{fontWeight: "bold"}}> Cases on First Day       </Text>
-           {this.state.firstDayCases}</Text>
-       <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginLeft: '5%', marginBottom: 2}}/> 
-        
-       <Text style={{marginLeft: 20,marginTop: 5,marginBottom: 5}}>
-       <Text style={{fontWeight: "bold"}}> Total Cases                    </Text>
-           {this.state.totalCases}</Text>
-       <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginLeft: '5%', marginBottom: 2}}/> 
-
-       <Text style={{marginLeft: 20,marginTop: 5,marginBottom: 5}}>
-       <Text style={{fontWeight: "bold"}}> Active Cases                 </Text>
-           {this.state.activeCases}</Text>
-       <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginLeft: '5%', marginBottom: 2}}/> 
-
-       <Text style={{marginLeft: 20,marginTop: 5,marginBottom: 5}}>
-       <Text style={{fontWeight: "bold"}}> Total Deaths                  </Text>
-           {this.state.deaths}</Text>
-       <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginLeft: '5%', marginBottom: 2}}/> 
-       
-
-       <Text style={{marginLeft: 20,marginTop: 5,marginBottom: 5}}>
-       <Text style={{fontWeight: "bold"}}> Recovered                     </Text>
-           {this.state.recovered}</Text>
-       <View style={{height: 1, width: '90%', backgroundColor: '#CED0CE', marginLeft: '5%', marginBottom: 2}}/> 
        </View>
 
        

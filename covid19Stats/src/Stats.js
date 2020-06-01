@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { View, FlatList, ActivityIndicator,StyleSheet} from 'react-native';
+import { View, FlatList,Image,StyleSheet,TouchableOpacity} from 'react-native';
 import { Text } from 'react-native-elements';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import RowText from './RowComponent'
 
   const styles = StyleSheet.create({
     container: {
@@ -20,7 +21,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
     title: {
       fontSize: 24,
       color: 'white',
-      
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      marginBottom: 6
     },
     values: {
         
@@ -95,9 +98,9 @@ class Stats extends Component {
         
         if (this.state.loading==true || this.state.data == null) {
           return (
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              <ActivityIndicator />
-            </View>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center',backgroundColor: 'white' }}>
+                 <Image style={{alignSelf: 'center',height: 160,width: 160}} source={require('../assets/loading.gif')}></Image>
+              </View>
           );
         }
         if(this.state.continent=="Australia%2FOceania"){
@@ -107,46 +110,28 @@ class Stats extends Component {
         if(this.state.data != null){
         return (
             <>
-        <View style={{ marginTop: 5,width: 100}}>
-        <Icon name="arrow-left" size={25} color="black" style={{marginLeft: 10}} onPress={() => this.props.navigation.goBack()} />
+        <View style={{ marginTop: 5,width: "100%",flexDirection: 'row',justifyContent: 'space-between'}}>
+        <Icon name="arrow-left" size={30} color="#40c4ff" style={{marginLeft: 10}} onPress={() => this.props.navigation.navigate("Home")} />
+        <TouchableOpacity onPress={()=> this.props.navigation.openDrawer()}>
+              <Image source={require('../assets/menu.png')}  style={{marginRight: 15,height: 30,width: 30}}></Image>
+              </TouchableOpacity>
       </View>
         <View style={{alignItems: 'center',justifyContent: 'center'}}>
         <Text h4>{this.cont}</Text>
         </View>
-        <FlatList
-        data={this.state.data}
-        keyExtractor={(item,index) => {         
-            return index.toString()}}
+        <FlatList  data={this.state.data}
+        keyExtractor={(item,index) => { return index.toString()}}
         renderItem={({ item,index }) => (
-            <View style={styles.item}>
+        <View style={styles.item}>
         <Text style={styles.title}>{item.country}</Text>
         <View style={styles.values}>
-        <View style={styles.valueColor,{backgroundColor: 'orange'}}></View>
-        <Text>
-            <Text style={{fontWeight: "bold"}}> Cases                 </Text>
-            {item.cases} </Text>
-        <Text>
-        <Text style={{fontWeight: "bold"}}> Active                 </Text>
-            {item.active}</Text>
-        <Text>
-        <Text style={{fontWeight: "bold"}}> Deaths                </Text>
-            {item.deaths}</Text>
-        <Text>
-        <Text style={{fontWeight: "bold"}}> Recovered         </Text>
-            {item.recovered}</Text>
-
-            <Text>
-            <Text style={{fontWeight: "bold"}}> Cases Today      </Text>
-            {item.todayCases}</Text>
-
-            <Text>
-            <Text style={{fontWeight: "bold"}}> Deaths Today    </Text>
-            {item.todayDeaths}</Text>
-
-            <Text>
-            <Text style={{fontWeight: "bold"}}> Tests                   </Text>
-            {item.tests}</Text>
-        
+        <RowText text="Cases" value={item.cases} styles={{marginLeft: 100}} showLine={false}></RowText>
+        <RowText text="Active" value={item.active} styles={{marginLeft: 100}} showLine={false}></RowText>
+        <RowText text="Deaths" value={item.deaths} styles={{marginLeft: 96}} showLine={false}></RowText>
+        <RowText text="Recovered" value={item.recovered} styles={{marginLeft: 70}} showLine={false}></RowText>
+        <RowText text="Cases Today" value={item.todayCases} styles={{marginLeft: 56}} showLine={false}></RowText>
+        <RowText text="Deaths Today" value={item.todayDeaths} styles={{marginLeft: 50}} showLine={false}></RowText>
+        <RowText text="Tests" value={item.tests} styles={{marginLeft: 105}} showLine={false}></RowText>
         </View>
       </View>
           )}
